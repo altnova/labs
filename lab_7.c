@@ -301,7 +301,7 @@ int main()
             getchar();
             */
 
-            g = fopen(gg, "w+");
+            g = fopen(gg, "r+");
 
 /*
             if (g && menu("WARNING: this output file already exists\ndo you want to stop? [y/n] ") == 'y') {
