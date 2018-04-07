@@ -10,3 +10,9 @@ Lab 7
 слово должно входить только в одну подстроку и не может разбиваться. Если есть
 слова, которые состоят более, чем из 20 символов, то они в новый файл не
 переносятся.
+
+TODO
+====
+* split "7a" an "7b" solutions into separate files
+* switch to doxygen markup
+* rewrite solution "7b" as finite automaton
