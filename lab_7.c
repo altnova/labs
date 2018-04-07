@@ -168,10 +168,8 @@ char** sublines(char *s)
         l[i] = malloc(sizeof(char));
         l[i + 1] = malloc(sizeof(char));
 
-        if (!i) {
-            c = s[k];
-            k++;
-        }
+        if (!i) 
+            c = s[k++];
         else
             c = b;
         // printf("%c ", c);
