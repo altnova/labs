@@ -1,2 +1,4 @@
 *.dsym
 lab7
+.DS_Store
+g.txt

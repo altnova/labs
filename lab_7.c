@@ -138,18 +138,19 @@ char* get_line(FILE *f)
         s = realloc(s, sizeof(char)*(i + 1));
         c = getc(f);
         if (c == '\n') {
-            s[i] = '\0';
+            // s[i] = '\0';
             break;
         }
         s[i] = c;
         i++;
         if (feof(f)) {    
             s = realloc(s, sizeof(char) * (i + 1));
-            s[i] = '\0';
+            // s[i] = '\0';
             break;
         }
     }
-    // debug();
+    s[i] = '\0';
+    // printf("%s\n", s);
     return s;
 }
 
@@ -160,17 +161,20 @@ char** sublines(char *s)
     int i, j, k = 0;
     l = malloc(sizeof(char*));
  
+    // debug();
     for (i = 0; c != '\0'; i++) {
         // debug();
         l = realloc(l, sizeof(char*)*(i + 2));
         l[i] = malloc(sizeof(char));
         l[i + 1] = malloc(sizeof(char));
 
-        if (!i)
-            c = s[k++];
+        if (!i) {
+            c = s[k];
+            k++;
+        }
         else
             c = b;
-
+        // printf("%c ", c);
         if (c == '\0') 
             break;
 
@@ -178,18 +182,21 @@ char** sublines(char *s)
             for (j = 0; c == ' '; j++) {
                 l[i] = realloc(l[i], sizeof(char)*(j + 2));
                 l[i][j] = c;
-                c = s[k++];
+                c = s[k];
+                k++;
             }
         else 
-            for (j = 0; in_abc(c); j++) {
+            for (j = 0; c != ' ' && c != '\0'; j++) {
                 l[i] = realloc(l[i], sizeof(char)*(j + 2));
                 l[i][j] = c;
-                c = s[k++];
+                c = s[k];
+                k++;
             }
         b = c;
         l[i][j] = '\0';
         // printf("1%s1\n", l[i]);
     }
+    // printf("%d\n", i);
     l[i][0] = '\0';
     return l;
 }
@@ -205,7 +212,7 @@ void print_sublines(char **l, FILE *g)
             // debug();
             // printf("1%s1\n", l[i]);
             fprintf(g, "%s", l[i]);
-            debug();
+            // debug();
         }
         else 
             for (j = 0; j < strlen(l[i]); j++) 
@@ -225,16 +232,16 @@ void solve_b(FILE *f, FILE *g)
     int i, j, k, n;
     
     while (!feof(f)) {
-        // debug();
         s = get_line(f);
-        // debug();
+        // printf("%d\n", strlen(s));
         if (strlen(s) > 20) {
             // debug();
             l = sublines(s);
             // debug();
             print_sublines(l, g);
+            // debug();
         }
-       // debug();
+        // debug();
         free(s);
     }
     fclose(f);
