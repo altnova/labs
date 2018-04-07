@@ -4,10 +4,7 @@
 #include <string.h>
 #include <math.h>
 
-void debug()
-{
-    printf("boom\n");
-}
+#define O printf
 
 /*  //////////////////////////////////////////////////////
  *  функции общего назначения
@@ -29,7 +26,7 @@ int in_abc(char c)
 char menu(const char *hint) 
 {
     char c;
-    printf("%s", hint);
+    O("%s", hint);
     c = getchar();
     getchar(); // отлавливаем нажатие на enter
     return c;
@@ -51,10 +48,10 @@ void gen_a(const char *s)
 		temp = rand() % 1000 / 100.0 - 3;
         if (temp) {
 		  fwrite(&temp, sizeof(double), 1, f);
-          // printf("%.2lf ", temp);
+          //O("%.2lf ", temp);
         }
 	}
-    // printf("\n");
+    //O("\n");
 	fclose(f);
 }
 
@@ -78,9 +75,9 @@ void printfile(FILE* f)
     while (!feof(f)) {
         fread(&val, sizeof(double), 1, f);
         if (!feof(f))
-            printf("%.2lf ", val);
+            O("%.2lf ", val);
     }
-    printf("\n");
+    O("\n");
     rewind(f);
 }
 
@@ -89,7 +86,7 @@ void solve_a(FILE* f)
 {
     double val, mul = 1;
     int i, N_pos, N;
-    printf("position?\n");
+    O("position?\n");
     scanf("%d", &N);
     for (i = 1; fread(&val, sizeof(double), 1, f) == 1; i++) {
         mul *= val;
@@ -133,7 +130,7 @@ char* get_line(FILE *f)
     int i = 0;
     char c, *s;
     s = malloc(sizeof(char));
-    // debug();
+    //O("\n");
     while (1) {
         s = realloc(s, sizeof(char)*(i + 1));
         c = getc(f);
@@ -150,7 +147,7 @@ char* get_line(FILE *f)
         }
     }
     s[i] = '\0';
-    // printf("%s\n", s);
+    //O("%s\n", s);
     return s;
 }
 
@@ -161,9 +158,9 @@ char** sublines(char *s)
     int i, j, k = 0;
     l = malloc(sizeof(char*));
  
-    // debug();
+    //O("\n");
     for (i = 0; c != '\0'; i++) {
-        // debug();
+        //O("\n");
         l = realloc(l, sizeof(char*)*(i + 2));
         l[i] = malloc(sizeof(char));
         l[i + 1] = malloc(sizeof(char));
@@ -174,7 +171,7 @@ char** sublines(char *s)
         }
         else
             c = b;
-        // printf("%c ", c);
+        //O("%c ", c);
         if (c == '\0') 
             break;
 
@@ -194,9 +191,9 @@ char** sublines(char *s)
             }
         b = c;
         l[i][j] = '\0';
-        // printf("1%s1\n", l[i]);
+        //O("1%s1\n", l[i]);
     }
-    // printf("%d\n", i);
+    //O("%d\n", i);
     l[i][0] = '\0';
     return l;
 }
@@ -207,17 +204,17 @@ void print_sublines(char **l, FILE *g)
     int i = 0, j;
    
     while (l[i][0] != 0) {
-        // debug();
+        //O("\n");
         if (strlen(l[i]) < 21 || l[i][0] == ' ') {
-            // debug();
-            // printf("1%s1\n", l[i]);
+            //O("\n");
+            //O("1%s1\n", l[i]);
             fprintf(g, "%s", l[i]);
-            // debug();
+            //O("\n");
         }
         else 
             for (j = 0; j < strlen(l[i]); j++) 
                 fprintf(g, " ");
-        // debug();
+        //O("\n");
         free(l[i]);
         i++;
     }
@@ -233,15 +230,15 @@ void solve_b(FILE *f, FILE *g)
     
     while (!feof(f)) {
         s = get_line(f);
-        // printf("%d\n", strlen(s));
+        //O("%d\n", strlen(s));
         if (strlen(s) > 20) {
-            // debug();
+            //O("\n");
             l = sublines(s);
-            // debug();
+            //O("\n");
             print_sublines(l, g);
-            // debug();
+            //O("\n");
         }
-        // debug();
+        //O("\n");
         free(s);
     }
     fclose(f);
@@ -262,17 +259,17 @@ int main()
 /*
     c = menu("hit a or b: ");
     if (c != 'a' && c != 'b') {
-        printf("ERROR: unknown command\n");
+        O("ERROR: unknown command\n");
         return 1;     
     }
 
     ff = malloc(sizeof(char) * 30);
-    printf("name of input file?\n");
+    O("name of input file?\n");
     scanf("%s", ff);
     getchar();
     f = fopen(ff, "r");
     if (f) {
-        printf("WARNING: this file already exists\n");
+        O("WARNING: this file already exists\n");
         if (menu("generate input file with this name? [y/n]") == 'y') {
             if (c == 'a')
                 gen_a(ff);
@@ -280,7 +277,7 @@ int main()
                 gen_b(ff); 
         }
     } else {
-        printf("file will be generated\n");
+        O("file will be generated\n");
         if (c == 'a')
             gen_a(ff);
         else
@@ -296,14 +293,14 @@ int main()
             f = fopen(ff, "r+b");
             printfile(f);
             solve_a(f);
-            printf("done\n");
+            O("done\n");
             break;
     /*  решение б   */
         case 'b':
             f = fopen(ff, "r");
             /*
             gg = malloc(sizeof(char) * 30);
-            printf("name of output file?\n");
+            O("name of output file?\n");
             scanf("%s", gg);
             getchar();
             */
@@ -322,7 +319,7 @@ int main()
             //free(gg);
 */
             solve_b(f, g);
-            printf("done\n");
+            O("done\n");
             break;
     }
 
