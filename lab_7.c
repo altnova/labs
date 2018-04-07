@@ -151,8 +151,8 @@ char** sublines(char *s)
         l = realloc(l, sizeof(char*)*(i + 2));
         l[i] = malloc(sizeof(char));
         l[i + 1] = malloc(sizeof(char));
+        c = i?b:s[k++];
 
-        c = i ? b : s[k++];
         if (c == '\0') 
             break;
 
