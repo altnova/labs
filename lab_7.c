@@ -249,15 +249,16 @@ void solve_b(FILE *f, FILE *g)
 int main() 
 {
     srand(time(NULL));
-    char c, *ff, *gg;
+    char c='b', *ff="f.txt", *gg="g.txt";
     FILE *f, *g;
-    c = menu("hit a or b: ");
 
+/*
+    c = menu("hit a or b: ");
     if (c != 'a' && c != 'b') {
         printf("ERROR: unknown command\n");
         return 1;     
     }
-  
+
     ff = malloc(sizeof(char) * 30);
     printf("name of input file?\n");
     scanf("%s", ff);
@@ -279,6 +280,7 @@ int main()
             gen_b(ff);  
     } 
     fclose(f);
+*/
 
     /*  разборки и предупреждения по поводу генерации файла */
     switch(c) {
@@ -292,25 +294,31 @@ int main()
     /*  решение б   */
         case 'b':
             f = fopen(ff, "r");
+            /*
             gg = malloc(sizeof(char) * 30);
             printf("name of output file?\n");
             scanf("%s", gg);
             getchar();
-            g = fopen(gg, "r+");
-            if (g) 
-                if (menu("WARNING: this output file already exists\ndo you want to stop? [y/n] ") == 'y') {
-                    fclose(g);
-                    fclose(f);
-                    free(ff);
-                    free(gg);
-                    return 0;
-                }
-            free(gg);
+            */
+
+            g = fopen(gg, "w+");
+
+/*
+            if (g && menu("WARNING: this output file already exists\ndo you want to stop? [y/n] ") == 'y') {
+                fclose(g);
+                fclose(f);
+                free(ff);
+                free(gg);
+                return 0;
+            }
+
+            //free(gg);
+*/
             solve_b(f, g);
             printf("done\n");
             break;
     }
 
-    free(ff);
+    //free(ff);
     return 0;
 }
