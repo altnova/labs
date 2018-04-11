@@ -217,7 +217,7 @@ int main(int argc, char **argv)
                 gen_a(argv[1]);
             else 
                 if (!f) {
-                    O("input file will be generated");
+                    O("input file will be generated\n");
                     gen_a(argv[1]);
                 }
    
@@ -234,7 +234,7 @@ int main(int argc, char **argv)
                 gen_b(argv[1]);
             else 
                 if (!f) {
-                    O("input file will be generated");
+                    O("input file will be generated\n");
                     gen_b(argv[1]);
                 }
 
@@ -252,7 +252,7 @@ int main(int argc, char **argv)
             break;
 
         default:
-            O("ERROR: unknown command\n");
+            O("ERROR\n");
         return 1;  
     }
 

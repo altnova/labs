@@ -142,7 +142,7 @@ int main(int argc, char **argv)
     if(f && menu("generate input file? [y/n] ") == 'y') 
         gen_b(argv[1]);
     else if (!f) {
-        O("input file will be generated");
+        O("input file will be generated\n");
         gen_b(argv[1]);
     }
 
