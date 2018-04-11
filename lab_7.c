@@ -4,20 +4,13 @@
 #include <string.h>
 #include <math.h>
 #define O printf
+#define FS(f, c) fscanf(f, "%c", &(c))
+#define FP(g, s) fprintf(g, "%s\n", s)
+
 
 /*  //////////////////////////////////////////////////////
  *  функции общего назначения
  */ //////////////////////////////////////////////////////
-
-/*  проверка на принадлежность алфавиту */
-int in_abc(char c)
-{
-    if (c >= 'A' && c <= 'Z')
-        return 1;
-    if (c >= 'a' && c <= 'z')
-        return 1;
-    return 0;
-}
 
 /*  функция, которая просит пользователя что-то нажать   */
 char menu(const char *hint) 
@@ -36,16 +29,16 @@ char menu(const char *hint)
 /*  функция, которая генерирует файл для задания a   */
 void gen_a(const char *s) 
 {
-	unsigned int i, count;
-	double temp;
-	FILE *f = fopen(s, "wb");
-	count = (rand() % 9) + 2;
-	for (i = 0; i < count; i++) {
-		temp = rand() % 1000 / 100.0 - 3;
+    unsigned int i, count;
+    double temp;
+    FILE *f = fopen(s, "wb");
+    count = (rand() % 9) + 2;
+    for (i = 0; i < count; i++) {
+        temp = rand() % 1000 / 100.0 - 3;
         if (temp) 
-		  fwrite(&temp, sizeof(double), 1, f);
-	}
-	fclose(f);
+          fwrite(&temp, sizeof(double), 1, f);
+    }
+    fclose(f);
 }
 
 /*  функция, которая делает вставку посреди файла   */
@@ -106,181 +99,162 @@ void gen_b(const char *s)
     FILE* f = fopen(s, "w");
     count = rand() % 15;
     for (i = 0; i < count; i++) {
-        length = rand() % 45;
-        for (j = 0; j < length; j++) {
-            for (c = rand()%'{'; !in_abc(c); c = rand()%'{');
-            putc(c, f);
-            if (!(rand() % 17))
-                putc(' ', f);
-        }
+        length = rand() % 5;
+        for (j = 0; j < length; j++) 
+            for (c = '0'; c <= '9'; c++) {
+                putc(c, f);
+                if (!(rand() % 17)) {
+                    putc(' ', f);
+                    c = '0' - 1;
+                }
+            }
         putc('\n', f);
     }
     fclose(f);
 }
 
-char* get_line(FILE *f)
+void flags(char *a, char *b, char *c, char i, char j, char k)
 {
-    int i = 0;
-    char c, *s;
-    s = malloc(sizeof(char));
-    while (1) {
-        s = realloc(s, sizeof(char)*(i + 1));
-        c = getc(f);
-        if (c == '\n') {
-            break;
-        }
-        s[i] = c;
-        i++;
-        if (feof(f)) {    
-            s = realloc(s, sizeof(char) * (i + 1));
-            break;
-        }
-    }
-    s[i] = '\0';
-    return s;
+    *a = i; *b = j; *c = k;
 }
 
-/*  разделение на подстроки одной строки с сохр. пробелов    */
-char** sublines(char *s)
+/*  instead of realloc   */
+char* zero(char *buf, int len)
 {
-    char c = '1', **l, b;
-    int i, j, k = 0;
-    l = malloc(sizeof(char*));
-
-    for (i = 0; c != '\0'; i++) {
-        l = realloc(l, sizeof(char*)*(i + 2));
-        l[i] = malloc(sizeof(char));
-        l[i + 1] = malloc(sizeof(char));
-        c = i?b:s[k++];
-
-        if (c == '\0') 
-            break;
-
-        if (c == ' ') 
-            for (j = 0; c == ' '; j++) {
-                l[i] = realloc(l[i], sizeof(char)*(j + 2));
-                l[i][j] = c;
-                c = s[k++];
-            }
-        else 
-            for (j = 0; c != ' ' && c != '\0'; j++) {
-                l[i] = realloc(l[i], sizeof(char)*(j + 2));
-                l[i][j] = c;
-                c = s[k++];
-            }
-        b = c;
-        l[i][j] = '\0';
-    }
-    l[i][0] = '\0';
-    return l;
+    for (int i = 0; i < len; i++)
+        buf[i] = 0;
+    return buf;
 }
-
-/*  вывод подстрок в файл в соответствии с условиями    */
-void print_sublines(char **l, FILE *g)
-{
-    int i = 0, j;
-    while (l[i][0] != 0) {
-        if (strlen(l[i]) < 21 || l[i][0] == ' ') 
-            fprintf(g, "%s", l[i]);
-        else 
-            for (j = 0; j < strlen(l[i]); j++) 
-                fprintf(g, " ");
-        free(l[i]);
-        i++;
-    }
-    fprintf(g, "\n");
-    free(l);
-}
-
 /*  функция для решения задания б   */
 void solve_b(FILE *f, FILE *g)
 {
-    char **buf, *s, **l;
-    int i, j, k, n;
-    
+    char i, j, k , v, c = '1';
+    char *buf = calloc(21, sizeof(char));
+    flags(&i, &j, &k, 0, 0, 0);
+    /*  i, j, k - показательные параметры    */
+    FS(f, c);
+
     while (!feof(f)) {
-        s = get_line(f);
-        if (strlen(s) > 20) {
-            l = sublines(s);
-            print_sublines(l, g);
+    /* отмотать пробелы, т. к. buf начинается с буквы */
+        for (;!j && !feof(f) && (c == '\n' || c == ' '); ) {
+            k = k > 20 ? k : ++k;
+            if (c == '\n') 
+                flags(&i, &j, &k, 0, j, 0);
+            FS(f, c);
         }
-        free(s);
+        
+        if (feof(f))
+            break;
+        flags(&i, &j, &k, i, 0, k);
+
+        /*      get buf     */
+        for (; i < 21; i++) {
+            buf[i] = c;
+            if (c == '\n' || feof(f))
+                break;
+            if (i < 20) 
+                FS(f, c);
+            k = k > 20 ? k : ++k;
+        }
+
+        /*  1   1   1   1   1   */ 
+        /*  выход из-за конца строки    */
+        if (c == '\n' || feof(f)) {
+        /*  если длина слова больше 20  */    
+            if (k > 20) {
+                buf[i] = '\0';
+                FP(g, buf);
+            }
+            buf = zero(buf, 21);
+            flags(&i, &j, &k, 0, 0, 0);
+        }
+        else {
+            /*  проверка на наличие пробелов    */
+            for (i = 20; i >= 0 && buf[i] != ' '; ) 
+                c = buf[i--];
+
+            /*  2   2   2   2   2   */
+            /*  buf состоит из одного сплошного слова */
+            if (i == -1) {
+                c = buf[20];
+                for (; c != ' ' && c != '\n' && !feof(f); FS(f, c))
+                    k = k > 20 ? k : ++k;
+                if (c == '\n')
+                    flags(&i, &j, &k, i, j, 0);
+                buf = zero(buf, 21);
+                flags(&i, &j, &k, 0, 0, k);
+            }
+            /*  3   3   3   3   3   */
+            /*  buf состоит из нескольких слов  */
+            else {
+                buf[i] = 0;
+                FP(g, buf);
+                v = ++i;
+                for (; i < 21; i++) 
+                    buf[i - v] =  buf[i]; 
+                FS(f, c);  
+                flags(&i, &j, &k, 21 - v, 1, k);
+            }
+        }
     }
     fclose(f);
     fclose(g);
 }
-
 /*
  *  организация меню и всё такое     
  */
-int main() 
+int main(int argc, char **argv) 
 {
     srand(time(NULL));
-    char c='b', *ff="f.txt", *gg="g.txt";
     FILE *f, *g;
 
   /*  разборки и предупреждения по поводу генерации файла */
-    c = menu("hit a or b: ");
-    if (c != 'a' && c != 'b') {
-        O("ERROR: unknown command\n");
-        return 1;     
-    }
-
-    ff = malloc(sizeof(char) * 30);
-    O("name of input file?\n");
-    scanf("%s", ff);
-    getchar();
-    f = fopen(ff, "r");
-    if (f) {
-        O("WARNING: this file already exists\n");
-        if (menu("generate input file with this name? [y/n]") == 'y') {
-            if (c == 'a')
-                gen_a(ff);
+    switch(argc) {
+    /*  решение а   */   
+        case 2:
+            f = fopen(argv[1], "r");
+            if(f && menu("generate input file? [y/n] ") == 'y') 
+                gen_a(argv[1]);
             else 
-                gen_b(ff); 
-        }
-    } else {
-        O("file will be generated\n");
-        if (c == 'a')
-            gen_a(ff);
-        else
-            gen_b(ff);  
-    } 
-    fclose(f);
-
-
-    switch(c) {
-    /*  решение а   */
-        case 'a':
-            f = fopen(ff, "r+b");
+                if (!f) {
+                    O("input file will be generated");
+                    gen_a(argv[1]);
+                }
+   
+            f = fopen(argv[1], "r+b");
             printfile(f);
             solve_a(f);
             O("done\n");
             break;
-    /*  решение б   */
-        case 'b':
-            f = fopen(ff, "r");
+    /*  решение б   */   
+        case 3:
+            f = fopen(argv[1], "r");
 
-            gg = malloc(sizeof(char) * 30);
-            O("name of output file?\n");
-            scanf("%s", gg);
-            getchar();
-            
-            g = fopen(gg, "w+");
-            free(gg);
+            if(f && menu("generate input file? [y/n] ") == 'y') 
+                gen_b(argv[1]);
+            else 
+                if (!f) {
+                    O("input file will be generated");
+                    gen_b(argv[1]);
+                }
 
-            if (g && menu("WARNING: this output file already exists\ndo you want to stop? [y/n] ") == 'y') {
+            f = fopen(argv[1], "r");
+            g = fopen(argv[2], "w+");
+
+            if (g && menu("WARNING: this output file already exists\ncontinue? [y/n] ") == 'n') {
                 fclose(g);
                 fclose(f);
-                free(ff);
                 return 0;
-            }
+            } 
 
             solve_b(f, g);
             O("done\n");
             break;
+
+        default:
+            O("ERROR: unknown command\n");
+        return 1;  
     }
 
-    free(ff);
     return 0;
 }
