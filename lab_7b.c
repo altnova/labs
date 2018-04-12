@@ -133,7 +133,7 @@ int main(int argc, char **argv)
 	FILE *f, *g;
 
     if (argc != 3) {
-        O("ERROR\n");
+        O("usage: %s infile outfile\n", argv[0]);
         return 1;
     }
 
