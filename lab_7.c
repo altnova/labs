@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <unistd.h>
 #define O printf
 #define FS(f, c) fscanf(f, "%c", &(c))
 #define FP(g, s) fprintf(g, "%s\n", s)
@@ -121,17 +122,15 @@ void flags(char *a, char *b, char *c, char i, char j, char k)
 }
 
 /*  instead of realloc   */
-char* zero(char *buf, int len)
+void zero(char buf[], int n)
 {
-    for (int i = 0; i < len; i++)
-        buf[i] = 0;
-    return buf;
+    for (int i = 0; i < n; buf[i++] = 0);
 }
 /*  функция для решения задания б   */
 void solve_b(FILE *f, FILE *g)
 {
     char i, j, k, v, c = '1';
-    char buf = [21];
+    char buf[21];
     flags(&i, &j, &k, 0, 0, 0);
     /*  
      *  i, j, k -  показательные параметры    
@@ -154,7 +153,7 @@ void solve_b(FILE *f, FILE *g)
             break;
         flags(&i, &j, &k, i, 0, k);
 
-        /*      get buf     */
+        /* буфер набирается посимвольно     */
         for (; i < 21; i++) {
             buf[i] = c;
             if (c == '\n' || feof(f))
@@ -166,40 +165,47 @@ void solve_b(FILE *f, FILE *g)
 
         /*  1 cлучай  */ 
         /*  выход из-за конца строки    */
+        /*  т. е. буфер заполнился не полностью*/
         if (c == '\n' || feof(f)) {
-        /*  если длина слова больше 20  */    
+        /*  если длина слова больше 20, то буфер выписывается  */    
             if (k > 20) {
                 buf[i] = '\0';
                 FP(g, buf);
             }
-            buf = zero(buf, 21);
+            zero(buf, 21);
             flags(&i, &j, &k, 0, 0, 0);
         }
         else {
-            /*  проверка на наличие пробелов    */
+            /*  проверка на наличие пробелов в буфере   */
             for (i = 20; i >= 0 && buf[i] != ' '; ) 
                 c = buf[i--];
 
             /*  2   случай   */
             /*  buf состоит из одного сплошного слова */
+            /*  то есть он не удовлетворяет условия и не выписывается */
             if (i == -1) {
                 c = buf[20];
                 for (; c != ' ' && c != '\n' && !feof(f); FS(f, c))
                     k = k > 20 ? k : ++k;
                 if (c == '\n')
                     flags(&i, &j, &k, i, j, 0);
-                buf = zero(buf, 21);
+                zero(buf, 21);
                 flags(&i, &j, &k, 0, 0, k);
             }
             /*  3   случай  */
             /*  buf состоит из нескольких слов  */
             else {
+            /*  выписывается весь буфер до последнего пробела */
                 buf[i] = 0;
                 FP(g, buf);
                 v = ++i;
+            /*  символы после последнего пробела сдвигаются в начало буфера */
                 for (; i < 21; i++) 
                     buf[i - v] =  buf[i]; 
                 FS(f, c);  
+            /*  i устанавливантся на последний символ + 1 */
+            /*  т. е. следующий набор буфера не перекроет символы,
+             *  которые раньше шли после последнего пробела */
                 flags(&i, &j, &k, 21 - v, 1, k);
             }
         }
@@ -235,9 +241,11 @@ int main(int argc, char **argv)
             break;
     /*  решение б   */   
         case 3:
-            if (access(argv[1], F_OK) != -1) 
-                if(menu("generate input file? [y/n] ") == 'y') 
+            if (access(argv[1], F_OK) != -1) {
+                if(menu("generate input file? [y/n] ") == 'y') {
                     gen_b(argv[1]);
+                }
+            }
             else {
                 O("input file will be generated\n");
                 gen_b(argv[1]);
