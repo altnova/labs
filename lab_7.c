@@ -74,6 +74,7 @@ void solve_a(FILE* f)
     int i, N_pos, N;
     O("position?\n");
     scanf("%d", &N);
+    /*  пока есть что читать    */
     for (i = 1; fread(&val, sizeof(double), 1, f) == 1; i++) {
         mul *= val;
         if (i <= N) 
@@ -113,6 +114,7 @@ void gen_b(const char *s)
     fclose(f);
 }
 
+/*  устанавливает значение переменных по их адресу */
 void flags(char *a, char *b, char *c, char i, char j, char k)
 {
     *a = i; *b = j; *c = k;
@@ -128,10 +130,15 @@ char* zero(char *buf, int len)
 /*  функция для решения задания б   */
 void solve_b(FILE *f, FILE *g)
 {
-    char i, j, k , v, c = '1';
-    char *buf = calloc(21, sizeof(char));
+    char i, j, k, v, c = '1';
+    char buf = [21];
     flags(&i, &j, &k, 0, 0, 0);
-    /*  i, j, k - показательные параметры    */
+    /*  
+     *  i, j, k -  показательные параметры    
+     *      i   -  номер элемента буфера
+     *      j   -  флаг для исполнения некоторых итераций
+     *      k   -  длина строки
+     */
     FS(f, c);
 
     while (!feof(f)) {
@@ -157,7 +164,7 @@ void solve_b(FILE *f, FILE *g)
             k = k > 20 ? k : ++k;
         }
 
-        /*  1   1   1   1   1   */ 
+        /*  1 cлучай  */ 
         /*  выход из-за конца строки    */
         if (c == '\n' || feof(f)) {
         /*  если длина слова больше 20  */    
@@ -173,7 +180,7 @@ void solve_b(FILE *f, FILE *g)
             for (i = 20; i >= 0 && buf[i] != ' '; ) 
                 c = buf[i--];
 
-            /*  2   2   2   2   2   */
+            /*  2   случай   */
             /*  buf состоит из одного сплошного слова */
             if (i == -1) {
                 c = buf[20];
@@ -184,7 +191,7 @@ void solve_b(FILE *f, FILE *g)
                 buf = zero(buf, 21);
                 flags(&i, &j, &k, 0, 0, k);
             }
-            /*  3   3   3   3   3   */
+            /*  3   случай  */
             /*  buf состоит из нескольких слов  */
             else {
                 buf[i] = 0;
@@ -212,15 +219,15 @@ int main(int argc, char **argv)
     switch(argc) {
     /*  решение а   */   
         case 2:
-            f = fopen(argv[1], "r");
-            if(f && menu("generate input file? [y/n] ") == 'y') 
-                gen_a(argv[1]);
-            else 
-                if (!f) {
-                    O("input file will be generated\n");
+            if (access(argv[1], F_OK ) != -1) {
+                if(menu("generate input file? [y/n] ") == 'y') 
                     gen_a(argv[1]);
-                }
-   
+            }
+            else {
+                O("input file will be generated\n");
+                gen_a(argv[1]);
+            }
+
             f = fopen(argv[1], "r+b");
             printfile(f);
             solve_a(f);
@@ -228,31 +235,27 @@ int main(int argc, char **argv)
             break;
     /*  решение б   */   
         case 3:
-            f = fopen(argv[1], "r");
-
-            if(f && menu("generate input file? [y/n] ") == 'y') 
-                gen_b(argv[1]);
-            else 
-                if (!f) {
-                    O("input file will be generated\n");
+            if (access(argv[1], F_OK) != -1) 
+                if(menu("generate input file? [y/n] ") == 'y') 
                     gen_b(argv[1]);
-                }
+            else {
+                O("input file will be generated\n");
+                gen_b(argv[1]);
+            }
 
+            if (access(argv[2], F_OK) != -1) 
+                if(menu("WARNING: this output file already exists\ncontinue? [y/n] ") == 'n')
+                    return 0;
+            
             f = fopen(argv[1], "r");
             g = fopen(argv[2], "w+");
-
-            if (g && menu("WARNING: this output file already exists\ncontinue? [y/n] ") == 'n') {
-                fclose(g);
-                fclose(f);
-                return 0;
-            } 
 
             solve_b(f, g);
             O("done\n");
             break;
 
         default:
-            O("ERROR\n");
+            O("usage: %s <input> <output>\n", argv[0]);
         return 1;  
     }
 
