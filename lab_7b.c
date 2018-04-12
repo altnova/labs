@@ -39,11 +39,17 @@ void gen_b(const char *s)
 }
 
 /*  instead of realloc   */
-char* zero(char *buf, int len)
+/*char* zero(char *buf, int len)
 {
     for (int i = 0; i < len; i++)
         buf[i] = 0;
     return buf;
+}
+*/
+
+void zero(char buf[], int n)
+{
+    for (int i = 0; i < n; buf[i++] = 0);
 }
 
 void flags(char *a, char *b, char *c, char i, char j, char k)
@@ -54,12 +60,13 @@ void flags(char *a, char *b, char *c, char i, char j, char k)
 void solve_b(FILE *f, FILE *g)
 {
     char i, j, k , v, c = '1';
-    char *buf = calloc(21, sizeof(char));
+    //char *buf = calloc(21, sizeof(char));
+    char buf[21];
     flags(&i, &j, &k, 0, 0, 0);
 
     FS(f, c);
 
-        while (!feof(f)) {
+    while (!feof(f)) {
         /* rewind spaces because buf must start with letter */
         for (;!j && !feof(f) && (c == '\n' || c == ' '); ) {
             k = k > 20 ? k : ++k;
@@ -90,7 +97,8 @@ void solve_b(FILE *f, FILE *g)
                 buf[i] = '\0';
                 FP(g, buf);
             }
-            buf = zero(buf, 21);
+            //buf = zero(buf, 21);
+            zero(buf, 21);
             flags(&i, &j, &k, 0, 0, 0);
         } 
         else {
@@ -106,7 +114,8 @@ void solve_b(FILE *f, FILE *g)
                     k = k > 20 ? k : ++k;
                 if (c == '\n')
                     flags(&i, &j, &k, i, j, 0);
-                buf = zero(buf, 21);
+                //buf = zero(buf, 21);
+                zero(buf, 21);
                 flags(&i, &j, &k, 0, 0, k);
             }
             /*  3   3   3   3   3   */
